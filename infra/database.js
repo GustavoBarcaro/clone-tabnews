@@ -7,7 +7,7 @@ async function query(queryObject) {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
-    ssl: process.env.NODE_ENV === "development" ? false : true,
+    ssl: getSSLValues(),
   });
   
   try {
@@ -40,7 +40,14 @@ async function getCurrentConnections() {
   });
   return response.rows[0].current_connections;
 }
-
+function getSSLValues() {
+  if(process.env.POSTGRES_CA) {
+    return {
+      ca: process.env.POSTGRES_CA
+    }
+  }
+  return process.env.NODE_ENV === "development" ? false : true
+}
 export default {
   query,
   getVersion,
